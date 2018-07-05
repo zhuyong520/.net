@@ -1,0 +1,53 @@
+  List<string> imgList = new List<string>();
+            string[] myfiles = Request.Files.AllKeys;
+            int index = 1;
+            string datetime = DateTime.Now.ToString("yyyyMMddHHmmssfffffff");
+            foreach (var item in myfiles)
+            {
+
+                HttpPostedFile file = Request.Files[item];
+                string UrlName = AddImg(file, datetime, index);
+                if (UrlName == "1" || UrlName == "2")
+                {
+                    imgbool = UrlName;
+                    break;
+                }
+                imgList.Add(UrlName);
+                index += 1;
+            }
+        
+
+
+
+  public string AddImg(HttpPostedFile file, string datetime, int index)
+        {
+            string filePath = string.Empty;
+            string name = Path.GetExtension(file.FileName).ToLower();
+            int contentLength = file.ContentLength;
+            try
+            {
+                string fileUrl3 = ConfigurationManager.AppSettings["ImgFilesCopy"].ToString();
+                if (contentLength <= 10 * 1024 * 10240)
+                {
+                    if (name == ".jpg" || name == ".png" || name == ".jpeg")
+                    {
+                        Random ran = new Random();
+                        int random = ran.Next(1, 9999);
+                        name = datetime + random.ToString() + index.ToString() + name;
+                        filePath = Path.Combine(fileUrl3, name);
+                        file.SaveAs(filePath);
+                    }
+                    return "1";  //
+                }
+            }
+            catch
+            {
+
+            }
+            return "2";  //
+        }
+
+
+
+<!--上传图片到服务器-->
+<add key="ImgFilesCopy" value="D:/wwwroot/Media_Root/images/weibao/"/>
