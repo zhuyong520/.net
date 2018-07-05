@@ -1,0 +1,67 @@
+
+                    string pathPerc = "D:/text/s/123.jpg";//需要生成的缩略图
+                    string source = "D:/text/123.jpg";//已经存在的
+                    if (!File.Exists(pathPerc))
+                    {
+                        File.Create(pathPerc).Close();
+                    }
+                    else
+                    {
+                        File.Delete(pathPerc);
+                        File.Create(pathPerc).Close();
+                    }
+                    getThumImage(source, 75, 80, pathPerc);
+					  /**/
+        /// <summary>  
+        /// 生成缩略图  
+        /// </summary>  
+        /// <param name="sourceFile">原始图片文件</param>  
+        /// <param name="quality">质量压缩比</param>  
+        /// <param name="multiple">限制高度等比缩放</param>  
+        /// <param name="outputFile">输出文件名</param>  
+        /// <returns>成功返回true,失败则返回false</returns>  
+        public static bool getThumImage(String sourceFile, long quality, int multiple, String outputFile)
+        {
+            try
+            {
+                long imageQuality = quality;
+                Bitmap sourceImage = new Bitmap(sourceFile);
+                ImageCodecInfo myImageCodecInfo = GetEncoderInfo("image/jpeg");
+                System.Drawing.Imaging.Encoder myEncoder = System.Drawing.Imaging.Encoder.Quality;
+                EncoderParameters myEncoderParameters = new EncoderParameters(1);
+                EncoderParameter myEncoderParameter = new EncoderParameter(myEncoder, imageQuality);
+                myEncoderParameters.Param[0] = myEncoderParameter;
+                float xWidth = sourceImage.Width;
+                float yWidth = sourceImage.Height;
+                yWidth = multiple;
+                xWidth = (sourceImage.Width * multiple) / sourceImage.Height;
+                Bitmap newImage = new Bitmap((int)(xWidth), (int)(yWidth));
+                Graphics g = Graphics.FromImage(newImage);
+
+                g.DrawImage(sourceImage, 0, 0, xWidth, yWidth);
+                g.Dispose();
+                newImage.Save(outputFile, myImageCodecInfo, myEncoderParameters);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /**/
+        /// <summary>  
+        /// 获取图片编码信息  
+        /// </summary>  
+        private static ImageCodecInfo GetEncoderInfo(String mimeType)
+        {
+            int j;
+            ImageCodecInfo[] encoders;
+            encoders = ImageCodecInfo.GetImageEncoders();
+            for (j = 0; j < encoders.Length; ++j)
+            {
+                if (encoders[j].MimeType == mimeType)
+                    return encoders[j];
+            }
+            return null;
+        }
